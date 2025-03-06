@@ -1,2 +1,3 @@
 # AIML_Post_Maker
-Topshit
+Cooler than your dad
+Hotter than your mom
