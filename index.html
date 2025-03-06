@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meet Our AIML TEAM</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&family=Audiowide&family=Exo+2:wght@400;700&family=Rajdhani:wght@500;700&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="post-container" id="post-container">
+        <div class="header">
+            <div class="logo-left">
+                <div class="logo-placeholder" id="logo-left-placeholder" style="width: 100px; height: 100px; display: flex; justify-content: center; align-items: center;">
+                    <span>Left Logo</span>
+                </div>
+            </div>
+            <div class="main-heading">
+                <h1>Meet Our AIML CLUB TEAM</h1>
+            </div>
+            <div class="logo-right">
+                <div class="logo-placeholder" id="logo-right-placeholder" style="width: 100px; height: 100px; display: flex; justify-content: center; align-items: center;">
+                    <span>Right Logo</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sub-heading">
+            <input type="text" id="team-position" placeholder="Enter Team Position (e.g., Media Club, Web Team)">
+        </div>
+        
+        <div class="team-container" id="team-container">
+        </div>
+    </div>
+    
+    <div class="controls-panel">
+        <div class="logo-controls">
+            <div class="logo-upload-control">
+                <input type="file" id="logo-left-upload" accept="image/*">
+                <label for="logo-left-upload">Upload Left Logo</label>
+            </div>
+            <div class="logo-upload-control">
+                <input type="file" id="logo-right-upload" accept="image/*">
+                <label for="logo-right-upload">Upload Right Logo</label>
+            </div>
+        </div>
+        
+        <div class="theme-selector">
+            <label for="theme-select">Select Theme:</label>
+            <select id="theme-select">
+                <option value="neural-network">Neural Network</option>
+                <option value="quantum-computing">Quantum Computing</option>
+                <option value="data-visualization">Data Visualization</option>
+                <option value="cybernetic">Cybernetic</option>
+                <option value="deep-learning">Deep Learning</option>
+                <option value="circuit">Circuit</option>
+            </select>
+        </div>
+        
+        <div class="controls">
+            <input type="file" id="add-member" accept="image/*" multiple>
+            <label for="add-member">Add Team Member</label>
+            <button id="download-post">Download Post</button>
+            <button id="reset">Reset</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
