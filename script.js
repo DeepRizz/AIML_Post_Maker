@@ -4,12 +4,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadBtn = document.getElementById('download-post');
     const resetBtn = document.getElementById('reset');
     const teamPositionInput = document.getElementById('team-position');
+    const teamQuoteInput = document.getElementById('team-quote');
     const themeSelect = document.getElementById('theme-select');
     const postContainer = document.getElementById('post-container');
     const logoLeftPlaceholder = document.getElementById('logo-left-placeholder');
     const logoRightPlaceholder = document.getElementById('logo-right-placeholder');
     const logoLeftUpload = document.getElementById('logo-left-upload');
     const logoRightUpload = document.getElementById('logo-right-upload');
+    const logoScale = document.getElementById('logo-scale');
+    const memberScale = document.getElementById('member-scale');
     
     let teamMembers = [];
     const MAX_MEMBERS = 4;
@@ -216,17 +219,89 @@ document.addEventListener('DOMContentLoaded', () => {
         addMemberInput.value = '';
     });
     
-    function renderTeamMembers() {
+    // Add scale value display updates
+    logoScale.nextElementSibling.textContent = logoScale.value + '%';
+    memberScale.nextElementSibling.textContent = memberScale.value + '%';
+    
+    // Logo scaling handler
+    logoScale.addEventListener('input', (e) => {
+        const scale = e.target.value / 100;
+        e.target.nextElementSibling.textContent = e.target.value + '%';
+        
+        const leftLogo = document.querySelector('#logo-left');
+        const rightLogo = document.querySelector('#logo-right');
+        
+        [leftLogo, rightLogo].forEach(logo => {
+            if (logo) {
+                const originalWidth = logo.getAttribute('data-original-width');
+                const originalHeight = logo.getAttribute('data-original-height');
+                const aspectRatio = parseFloat(logo.getAttribute('data-aspect-ratio'));
+                
+                if (aspectRatio) {
+                    let width, height;
+                    if (aspectRatio >= 1) {
+                        width = Math.min(100 * scale, originalWidth);
+                        height = width / aspectRatio;
+                    } else {
+                        height = Math.min(100 * scale, originalHeight);
+                        width = height * aspectRatio;
+                    }
+                    
+                    logo.style.width = `${width}px`;
+                    logo.style.height = `${height}px`;
+                }
+            }
+        });
+    });
+    
+    // Member images scaling handler
+    memberScale.addEventListener('input', (e) => {
+        const scale = e.target.value / 100;
+        e.target.nextElementSibling.textContent = e.target.value + '%';
+        renderTeamMembers(scale);
+    });
+    
+    function renderTeamMembers(scale = 1) {
         teamContainer.innerHTML = '';
         
         teamContainer.className = 'team-container members-' + teamMembers.length;
         
+        const membersContainer = document.createElement('div');
+        membersContainer.className = 'members-grid';
+        membersContainer.style.display = 'grid';
+        membersContainer.style.gridTemplateColumns = teamMembers.length === 3 ? 'repeat(3, 1fr)' : 
+                                                   teamMembers.length === 2 ? 'repeat(2, 1fr)' :
+                                                   teamMembers.length === 4 ? 'repeat(2, 1fr)' : '1fr';
+        membersContainer.style.gap = '20px';
+        membersContainer.style.width = '100%';
+        
         teamMembers.forEach((member, index) => {
             const memberElement = document.createElement('div');
             memberElement.className = 'member';
+            
+            // Calculate scaled dimensions
+            const img = new Image();
+            img.src = member.image;
+            const aspectRatio = member.width / member.height;
+            let width, height;
+            
+            if (aspectRatio >= 1) {
+                width = Math.min(member.width, 300) * scale;
+                height = width / aspectRatio;
+            } else {
+                height = Math.min(member.height, 300) * scale;
+                width = height * aspectRatio;
+            }
+            
             memberElement.innerHTML = `
-                <div class="member-img">
-                    <img src="${member.image}" alt="${member.name}" title="Original size: ${member.width}x${member.height}px" crossorigin="anonymous">
+                <div class="member-img" style="height: ${height}px;">
+                    <img 
+                        src="${member.image}" 
+                        alt="${member.name}" 
+                        title="Original size: ${member.width}x${member.height}px" 
+                        crossorigin="anonymous"
+                        style="width: ${width}px; height: ${height}px;"
+                    >
                 </div>
                 <div class="member-info">
                     <div class="member-name">${member.name}</div>
@@ -235,8 +310,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="remove-member" data-index="${index}">✕</button>
             `;
             
-            teamContainer.appendChild(memberElement);
+            membersContainer.appendChild(memberElement);
         });
+        
+        teamContainer.appendChild(membersContainer);
+        
+        // Add quote element if there's text in the quote input
+        const quoteText = teamQuoteInput.value.trim();
+        if (quoteText) {
+            const quoteElement = document.createElement('div');
+            quoteElement.className = 'team-quote';
+            quoteElement.innerHTML = `
+                <div class="quote-text">${quoteText}</div>
+            `;
+            teamContainer.appendChild(quoteElement);
+        }
         
         document.querySelectorAll('.remove-member').forEach(button => {
             button.addEventListener('click', (e) => {
@@ -275,6 +363,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 .remove-member:hover {
                     background-color: rgba(255, 0, 0, 0.9);
+                }
+                
+                .team-quote {
+                    width: 100%;
+                    text-align: center;
+                    padding: 15px 20px;
+                    margin-top: 30px;
+                    margin-bottom: 10px;
+                    font-size: 24px;
+                    font-weight: bold;
+                    font-family: 'Exo 2', sans-serif;
+                    color: rgba(255, 255, 255, 0.9);
+                    background: rgba(0, 0, 0, 0.4);
+                    border-radius: 10px;
+                    letter-spacing: 1px;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                    font-style: italic;
+                }
+                
+                .quote-text:before {
+                    content: '"';
+                    font-size: 32px;
+                    margin-right: 5px;
+                }
+                
+                .quote-text:after {
+                    content: '"';
+                    font-size: 32px;
+                    margin-left: 5px;
                 }
             `;
             document.head.appendChild(style);
@@ -448,10 +565,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500); // Increased timeout to ensure all images are fully loaded
     }
     
+    // Add event listener for quote input changes
+    teamQuoteInput.addEventListener('input', (e) => {
+        console.log('Quote input changed:', e.target.value); // Add logging
+        renderTeamMembers();
+    });
+    
+    // Also add a focus event listener to ensure the input is working
+    teamQuoteInput.addEventListener('focus', () => {
+        console.log('Quote input focused');
+    });
+    
     resetBtn.addEventListener('click', () => {
         if (confirm('Are you sure you want to reset? This will remove all team members.')) {
             teamMembers = [];
             teamPositionInput.value = '';
+            teamQuoteInput.value = '';
             
             // Reset logos too
             document.querySelector('.logo-left').innerHTML = `
